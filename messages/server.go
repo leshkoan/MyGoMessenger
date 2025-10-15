@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 
-	messagesv1 "MyGoMessenger/gen/go/messages"
+	messagesv1 "github.com/leshkoan/MyGoMessenger/gen/go/messages"
 
 	"github.com/jmoiron/sqlx"
 	"google.golang.org/grpc/codes"
