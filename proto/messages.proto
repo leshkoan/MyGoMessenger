@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package messages;
+
+option go_package = "github.com/leshkoan/MyGoMessenger/gen/go/messages";
+
+import "google/protobuf/timestamp.proto";
+
+// Message represents a chat message.
+message Message {
+    string id = 1;
+    string from_user_id = 2;
+    string to_user_id = 3;
+    string text = 4;
+    google.protobuf.Timestamp sent_at = 5;
+}
+
+// Request to send a message.
+message SendMessageRequest {
+    string from_user_id = 1;
+    string to_user_id = 2;
+    string text = 3;
+}
+
+// Response after sending a message.
+message SendMessageResponse {
+    Message message = 1;
+}
+
+// Request to get message history between two users.
+message GetMessageHistoryRequest {
+    string user1_id = 1;
+    string user2_id = 2;
+}
+
+// Response containing the message history.
+message GetMessageHistoryResponse {
+    repeated Message messages = 1;
+}
+
+// Service for message-related operations.
+service MessageService {
+    // Sends a new message.
+    rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
+    // Retrieves the message history between two users.
+    rpc GetMessageHistory(GetMessageHistoryRequest) returns (GetMessageHistoryResponse);
+}

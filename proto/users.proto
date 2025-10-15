@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package users;
+
+option go_package = "github.com/leshkoan/MyGoMessenger/gen/go/users";
+
+import "google/protobuf/timestamp.proto";
+
+// User represents a user in the system.
+message User {
+    string id = 1;
+    string username = 2;
+    google.protobuf.Timestamp created_at = 3;
+}
+
+// Request for registering a new user.
+message RegisterUserRequest {
+    string username = 1;
+}
+
+// Response after registering a new user.
+message RegisterUserResponse {
+    User user = 1;
+}
+
+// Service for user-related operations.
+service UserService {
+    // Registers a new user.
+    rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
+}

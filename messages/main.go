@@ -2,7 +2,14 @@ package main
 
 import (
 	"log"
-	"net/http"
+	"net"
+
+	messagesv1 "github.com/leshkoan/MyGoMessenger/gen/go/messages"
+	"google.golang.org/grpc"
+)
+
+const (
+	port = ":8002"
 )
 
 func main() {
@@ -14,11 +21,16 @@ func main() {
 	producer := NewKafkaProducer()
 	defer producer.Close()
 
-	http.HandleFunc("/messages/send", SendMessageHandler(db, producer))
-	http.HandleFunc("/messages/history", GetHistoryHandler(db))
+	lis, err := net.Listen("tcp", port)
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
+	}
 
-	log.Println("Message service starting on port 8002...")
-	if err := http.ListenAndServe(":8002", nil); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+	s := grpc.NewServer()
+	messagesv1.RegisterMessageServiceServer(s, NewServer(db, producer))
+
+	log.Printf("Message gRPC service starting on port %s...", port)
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("Failed to serve: %v", err)
 	}
 }

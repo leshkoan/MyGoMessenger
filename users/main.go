@@ -2,7 +2,14 @@ package main
 
 import (
 	"log"
-	"net/http"
+	"net"
+
+	usersv1 "github.com/leshkoan/MyGoMessenger/gen/go/users"
+	"google.golang.org/grpc"
+)
+
+const (
+	port = ":8001"
 )
 
 func main() {
@@ -11,10 +18,16 @@ func main() {
 		log.Fatalf("Failed to connect to the database: %v", err)
 	}
 
-	http.HandleFunc("/users/register", RegisterHandler(db))
+	lis, err := net.Listen("tcp", port)
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
+	}
 
-	log.Println("User service starting on port 8001...")
-	if err := http.ListenAndServe(":8001", nil); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+	s := grpc.NewServer()
+	usersv1.RegisterUserServiceServer(s, NewServer(db))
+
+	log.Printf("User gRPC service starting on port %s...", port)
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("Failed to serve: %v", err)
 	}
 }
