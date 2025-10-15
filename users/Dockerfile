@@ -20,7 +20,6 @@ COPY proto ./proto
 
 # Generate protobuf code
 RUN protoc -I /usr/include -I proto --go_out=. --go-grpc_out=. proto/*.proto
-RUN go mod download
 
 # Copy the source code
 COPY . .

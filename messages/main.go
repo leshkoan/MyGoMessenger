@@ -22,7 +22,7 @@ func main() {
 	producer := NewKafkaProducer()
 	defer producer.Close()
 
-	lis, err := net.Listen("tcp", port)
+	lis, err := net.Listen("tcp", "0.0.0.0"+port)
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
