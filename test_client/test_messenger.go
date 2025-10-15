@@ -35,7 +35,7 @@ func main() {
 	defer msgConn.Close()
 	messageClient := pb_messages.NewMessageServiceClient(msgConn)
 
-	log.Println("=== Тестирование мессенджера ===")
+	log.Println("=== Тестирование мессенджера с тремя пользователями ===")
 
 	// Создание пользователей
 	log.Println("Создание пользователей...")
@@ -51,17 +51,36 @@ func main() {
 	}
 	log.Printf("Пользователь B создан: ID=%s, Username=%s", userB.Id, userB.Username)
 
-	// Отправка сообщений
-	log.Println("Отправка сообщений...")
-	sendMessage(messageClient, userA.Id, userB.Id, "Привет от user_a!")
-	time.Sleep(1 * time.Second)
-	sendMessage(messageClient, userB.Id, userA.Id, "Привет от user_b!")
-	time.Sleep(1 * time.Second)
-	sendMessage(messageClient, userA.Id, userB.Id, "Как дела?")
-	time.Sleep(1 * time.Second)
-	sendMessage(messageClient, userB.Id, userA.Id, "Все отлично!")
+	userC, err := createUser(userClient, "user_c")
+	if err != nil {
+		log.Fatalf("Ошибка создания пользователя C: %v", err)
+	}
+	log.Printf("Пользователь C создан: ID=%s, Username=%s", userC.Id, userC.Username)
 
-	log.Println("=== Тест завершен успешно! ===")
+	// Отправка сообщений между всеми пользователями
+	log.Println("Отправка сообщений между всеми пользователями...")
+
+	// Пользователь A отправляет сообщения B и C
+	log.Println("Пользователь A отправляет сообщения...")
+	sendMessage(messageClient, userA.Id, userB.Id, "Привет от A пользователю B!")
+	time.Sleep(1 * time.Second)
+	sendMessage(messageClient, userA.Id, userC.Id, "Привет от A пользователю C!")
+	time.Sleep(1 * time.Second)
+
+	// Пользователь B отправляет сообщения A и C
+	log.Println("Пользователь B отправляет сообщения...")
+	sendMessage(messageClient, userB.Id, userA.Id, "Привет от B пользователю A!")
+	time.Sleep(1 * time.Second)
+	sendMessage(messageClient, userB.Id, userC.Id, "Привет от B пользователю C!")
+	time.Sleep(1 * time.Second)
+
+	// Пользователь C отправляет сообщения A и B
+	log.Println("Пользователь C отправляет сообщения...")
+	sendMessage(messageClient, userC.Id, userA.Id, "Привет от C пользователю A!")
+	time.Sleep(1 * time.Second)
+	sendMessage(messageClient, userC.Id, userB.Id, "Привет от C пользователю B!")
+
+	log.Println("=== Тест завершен успешно! Все пользователи обменялись сообщениями ===")
 }
 
 func createUser(client pb_users.UserServiceClient, username string) (*pb_users.User, error) {
