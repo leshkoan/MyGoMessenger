@@ -3,7 +3,8 @@ package main
 import (
 	"context"
 
-	messagesv1 "github.com/leshkoan/MyGoMessenger/gen/go/messages"
+	messagesv1 "MyGoMessenger/gen/go/messages"
+
 	"github.com/jmoiron/sqlx"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -13,8 +14,8 @@ import (
 // server — это реализация интерфейса MessageServiceServer.
 type server struct {
 	messagesv1.UnimplementedMessageServiceServer // для прямой совместимости
-	db       *sqlx.DB
-	producer *KafkaProducer
+	db                                           *sqlx.DB
+	producer                                     *KafkaProducer
 }
 
 // NewServer создает новый экземпляр сервера.

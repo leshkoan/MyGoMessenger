@@ -5,6 +5,7 @@ import (
 	"net"
 
 	usersv1 "github.com/leshkoan/MyGoMessenger/gen/go/users"
+
 	"google.golang.org/grpc"
 )
 

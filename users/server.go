@@ -3,7 +3,8 @@ package main
 import (
 	"context"
 
-	usersv1 "github.com/leshkoan/MyGoMessenger/gen/go/users"
+	usersv1 "MyGoMessenger/gen/go/users"
+
 	"github.com/jmoiron/sqlx"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -13,7 +14,7 @@ import (
 // server — это реализация интерфейса UserServiceServer.
 type server struct {
 	usersv1.UnimplementedUserServiceServer // для прямой совместимости
-	db *sqlx.DB
+	db                                     *sqlx.DB
 }
 
 // NewServer создает новый экземпляр сервера.

@@ -18,3 +18,7 @@ require (
 	golang.org/x/text v0.27.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250804133106-a7a43d27e69b // indirect
 )
+
+replace github.com/leshkoan/MyGoMessenger/gen/go/users => ./gen/go/users
+
+replace github.com/leshkoan/MyGoMessenger/gen/go/messages => ./gen/go/messages
