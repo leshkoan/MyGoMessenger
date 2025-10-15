@@ -1,0 +1,21 @@
+# AI-related files and directories
+.gemini/
+.specify/
+specs/
+
+# Go build artifacts
+*.exe
+*.test
+*.out
+
+# Dependencies
+vendor/
+
+# Environment variables
+.env
+
+# Docker
+.dockerignore
+BACK/  
+.gemini/  
+.specify/  

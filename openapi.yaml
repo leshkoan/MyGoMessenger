@@ -1,0 +1,128 @@
+openapi: 3.0.0
+info:
+  title: API MyGoMessendger
+  description: API для простого приложения для обмена сообщениями
+  version: 1.0.0
+
+paths:
+  /users/register:
+    post:
+      summary: Регистрация нового пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+      responses:
+        '201':
+          description: Пользователь успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Неверное тело запроса или пустое имя пользователя
+        '409':
+          description: Имя пользователя уже существует
+        '500':
+          description: Не удалось создать пользователя
+
+  /messages/send:
+    post:
+      summary: Отправить сообщение
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequest'
+      responses:
+        '201':
+          description: Сообщение успешно отправлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          description: Неверное тело запроса
+        '500':
+          description: Не удалось создать сообщение
+
+  /messages/history:
+    get:
+      summary: Получить историю сообщений между двумя пользователями
+      parameters:
+        - name: user1
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: user2
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Список сообщений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+        '400':
+          description: Требуются параметры запроса user1 и user2
+        '500':
+          description: Не удалось получить историю сообщений
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        from_user_id:
+          type: string
+          format: uuid
+        to_user_id:
+          type: string
+          format: uuid
+        text:
+          type: string
+        sent_at:
+          type: string
+          format: date-time
+
+    RegistrationRequest:
+      type: object
+      properties:
+        username:
+          type: string
+
+    SendMessageRequest:
+      type: object
+      properties:
+        from_user_id:
+          type: string
+          format: uuid
+        to_user_id:
+          type: string
+          format: uuid
+        text:
+          type: string
