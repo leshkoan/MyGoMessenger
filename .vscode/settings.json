@@ -1,3 +1,16 @@
 {
-    "cSpell.language": "en,ru"
+	"cSpell.language": "en,ru",
+	"cSpell.enabled": false,
+	"cSpell.enabledFileTypes": ["markdown", "plaintext", "text", "yaml", "json"],
+	"cSpell.words": [
+		"MyGoMessenger",
+		"usersv1",
+		"grpc",
+		"protobuf",
+		"gRPC",
+		"localhost",
+		"psql",
+		"postgres",
+		"dockerfile"
+	]
 }
