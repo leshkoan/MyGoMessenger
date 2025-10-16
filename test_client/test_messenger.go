@@ -2,9 +2,13 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"os"
 	"time"
 
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq" // Драйвер PostgreSQL
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -18,6 +22,13 @@ const (
 	messageSvcAddr = "localhost:8082"
 )
 
+// User представляет пользователя в системе (локальная копия структуры)
+type User struct {
+	ID        string    `json:"id" db:"id"`
+	Username  string    `json:"username" db:"username"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+}
+
 func main() {
 	// Устанавливаем соединение с сервисом пользователей
 	userConn, err := grpc.NewClient(userSvcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -25,7 +36,6 @@ func main() {
 		log.Fatalf("Не удалось подключиться к сервису пользователей: %v", err)
 	}
 	defer userConn.Close()
-	userClient := pb_users.NewUserServiceClient(userConn)
 
 	// Устанавливаем соединение с сервисом сообщений
 	msgConn, err := grpc.NewClient(messageSvcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -37,25 +47,25 @@ func main() {
 
 	log.Println("=== Тестирование мессенджера с тремя пользователями ===")
 
-	// Создание пользователей
-	log.Println("Создание пользователей...")
-	userA, err := createUser(userClient, "user_a")
+	// Создание пользователей (или получение существующих)
+	log.Println("Создание пользователей (или получение существующих)...")
+	userA, err := createOrGetUser("user_a")
 	if err != nil {
-		log.Fatalf("Ошибка создания пользователя A: %v", err)
+		log.Fatalf("Ошибка создания/получения пользователя A: %v", err)
 	}
-	log.Printf("Пользователь A создан: ID=%s, Username=%s", userA.Id, userA.Username)
+	log.Printf("Пользователь A: ID=%s, Username=%s", userA.Id, userA.Username)
 
-	userB, err := createUser(userClient, "user_b")
+	userB, err := createOrGetUser("user_b")
 	if err != nil {
-		log.Fatalf("Ошибка создания пользователя B: %v", err)
+		log.Fatalf("Ошибка создания/получения пользователя B: %v", err)
 	}
-	log.Printf("Пользователь B создан: ID=%s, Username=%s", userB.Id, userB.Username)
+	log.Printf("Пользователь B: ID=%s, Username=%s", userB.Id, userB.Username)
 
-	userC, err := createUser(userClient, "user_c")
+	userC, err := createOrGetUser("user_c")
 	if err != nil {
-		log.Fatalf("Ошибка создания пользователя C: %v", err)
+		log.Fatalf("Ошибка создания/получения пользователя C: %v", err)
 	}
-	log.Printf("Пользователь C создан: ID=%s, Username=%s", userC.Id, userC.Username)
+	log.Printf("Пользователь C: ID=%s, Username=%s", userC.Id, userC.Username)
 
 	// Отправка сообщений между всеми пользователями
 	log.Println("Отправка сообщений между всеми пользователями...")
@@ -81,6 +91,74 @@ func main() {
 	sendMessage(messageClient, userC.Id, userB.Id, "Привет от C пользователю B!")
 
 	log.Println("=== Тест завершен успешно! Все пользователи обменялись сообщениями ===")
+}
+
+// createOrGetUser создает пользователя или возвращает существующего
+func createOrGetUser(username string) (*pb_users.User, error) {
+	// Подключаемся к базе данных
+	db, err := connectToDB()
+	if err != nil {
+		return nil, fmt.Errorf("не удалось подключиться к базе данных: %v", err)
+	}
+	defer db.Close()
+
+	// Пытаемся найти пользователя
+	user, err := findUserByUsername(db, username)
+	if err == nil {
+		// Пользователь найден, возвращаем его
+		log.Printf("Пользователь %s уже существует, используем существующего пользователя", username)
+		return &pb_users.User{
+			Id:       user.ID,
+			Username: user.Username,
+		}, nil
+	}
+
+	// Пользователь не найден, создаем нового через gRPC сервис
+	userConn, err := grpc.NewClient(userSvcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, fmt.Errorf("не удалось подключиться к сервису пользователей: %v", err)
+	}
+	defer userConn.Close()
+	userClient := pb_users.NewUserServiceClient(userConn)
+
+	// Создаем пользователя через gRPC
+	r, err := userClient.RegisterUser(context.Background(), &pb_users.RegisterUserRequest{Username: username})
+	if err != nil {
+		return nil, fmt.Errorf("не удалось создать пользователя %s: %v", username, err)
+	}
+
+	log.Printf("Пользователь %s создан: ID=%s, Username=%s", username, r.GetUser().Id, r.GetUser().Username)
+	return r.GetUser(), nil
+}
+
+func connectToDB() (*sqlx.DB, error) {
+	dsn := fmt.Sprintf("host=localhost user=%s password=%s dbname=%s sslmode=disable",
+		getEnvOrDefault("POSTGRES_USER", "user"),
+		getEnvOrDefault("POSTGRES_PASSWORD", "password"),
+		getEnvOrDefault("POSTGRES_DB", "mydatabase"))
+
+	db, err := sqlx.Connect("postgres", dsn)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to database: %w", err)
+	}
+
+	return db, nil
+}
+
+func getEnvOrDefault(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
+}
+
+func findUserByUsername(db *sqlx.DB, username string) (*User, error) {
+	user := &User{}
+	err := db.Get(user, "SELECT id, username, created_at FROM users WHERE username=$1", username)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func createUser(client pb_users.UserServiceClient, username string) (*pb_users.User, error) {

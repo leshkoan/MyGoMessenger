@@ -3,8 +3,10 @@ module test_client
 go 1.25.2
 
 require (
+	github.com/jmoiron/sqlx v1.4.0
 	github.com/leshkoan/MyGoMessenger/gen/go/messages v0.0.0
 	github.com/leshkoan/MyGoMessenger/gen/go/users v0.0.0
+	github.com/lib/pq v1.10.9
 	google.golang.org/grpc v1.76.0
 )
 
