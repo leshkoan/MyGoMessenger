@@ -1,11 +1,11 @@
-module test_client
+module mygomessenger.com/mygomessenger/test_client
 
 go 1.25.2
 
 require (
 	github.com/jmoiron/sqlx v1.4.0
-	github.com/leshkoan/MyGoMessenger/gen/go/messages v0.0.0
-	github.com/leshkoan/MyGoMessenger/gen/go/users v0.0.0
+	mygomessenger.com/mygomessenger/gen/go/messages v0.0.0
+	mygomessenger.com/mygomessenger/gen/go/users v0.0.0
 	github.com/lib/pq v1.10.9
 	google.golang.org/grpc v1.76.0
 )
@@ -18,6 +18,7 @@ require (
 	google.golang.org/protobuf v1.36.10 // indirect
 )
 
-replace github.com/leshkoan/MyGoMessenger/gen/go/users => ../gen/go/users
+replace mygomessenger.com/mygomessenger/gen/go/users => ../gen/go/users
 
-replace github.com/leshkoan/MyGoMessenger/gen/go/messages => ../gen/go/messages
+replace mygomessenger.com/mygomessenger/gen/go/messages => ../gen/go/messages
+

@@ -1,0 +1,12 @@
+go 1.25.2
+
+use (
+	.
+	./client
+	./gen/go/messages
+	./gen/go/users
+	./messages
+	./notifications
+	./test_client
+	./users
+)

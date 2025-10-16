@@ -32,7 +32,6 @@
 ├── proto/                  # Protocol Buffers определения
 ├── gen/                    # Сгенерированные gRPC файлы
 ├── db/migrations/          # Миграции базы данных PostgreSQL
-├── github.com/leshkoan/MyGoMessenger/  # Локальные Go модули
 └── docker-compose.yml      # Оркестрация всех сервисов
 ```
 
@@ -122,8 +121,8 @@ protoc --go_out=. --go-grpc_out=. proto/*.proto
 
 ```go
 // go.mod
-replace github.com/leshkoan/MyGoMessenger/gen/go/users => ./gen/go/users
-replace github.com/leshkoan/MyGoMessenger/gen/go/messages => ./gen/go/messages
+replace MyGoMessenger/gen/go/users => ./gen/go/users
+replace MyGoMessenger/gen/go/messages => ./gen/go/messages
 ```
 
 ### Миграции базы данных

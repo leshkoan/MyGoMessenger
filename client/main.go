@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	messagesv1 "github.com/leshkoan/MyGoMessenger/gen/go/messages"
-	usersv1 "github.com/leshkoan/MyGoMessenger/gen/go/users"
+	messagesv1 "mygomessenger.com/mygomessenger/gen/go/messages"
+	usersv1 "mygomessenger.com/mygomessenger/gen/go/users"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

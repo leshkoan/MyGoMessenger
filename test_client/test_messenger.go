@@ -13,8 +13,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	// Импортируем сгенерированные пакеты напрямую из локальных файлов
-	pb_messages "github.com/leshkoan/MyGoMessenger/gen/go/messages"
-	pb_users "github.com/leshkoan/MyGoMessenger/gen/go/users"
+	pb_messages "mygomessenger.com/mygomessenger/gen/go/messages"
+	pb_users "mygomessenger.com/mygomessenger/gen/go/users"
 )
 
 const (
@@ -159,15 +159,6 @@ func findUserByUsername(db *sqlx.DB, username string) (*User, error) {
 		return nil, err
 	}
 	return user, nil
-}
-
-func createUser(client pb_users.UserServiceClient, username string) (*pb_users.User, error) {
-	r, err := client.RegisterUser(context.Background(), &pb_users.RegisterUserRequest{Username: username})
-	if err != nil {
-		log.Printf("Не удалось создать пользователя %s: %v", username, err)
-		return nil, err
-	}
-	return r.GetUser(), nil
 }
 
 func sendMessage(client pb_messages.MessageServiceClient, fromID, toID, text string) {

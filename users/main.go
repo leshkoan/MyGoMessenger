@@ -4,7 +4,7 @@ import (
 	"log"
 	"net"
 
-	usersv1 "github.com/leshkoan/MyGoMessenger/gen/go/users"
+	usersv1 "mygomessenger.com/mygomessenger/gen/go/users"
 
 	"google.golang.org/grpc"
 )

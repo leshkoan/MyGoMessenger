@@ -1,8 +1,10 @@
-module mygomessenger.com/mygomessenger/gen/go/messages
+module mygomessenger.com/mygomessenger/users
 
-go 1.25.2
+go 1.24.0
 
 require (
+	github.com/jmoiron/sqlx v1.4.0
+	github.com/lib/pq v1.10.9
 	google.golang.org/grpc v1.76.0
 	google.golang.org/protobuf v1.36.10
 )

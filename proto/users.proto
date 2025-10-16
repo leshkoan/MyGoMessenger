@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package users;
 
-option go_package = "github.com/leshkoan/MyGoMessenger/gen/go/users";
+option go_package = "MyGoMessenger/gen/go/users";
 
 import "google/protobuf/timestamp.proto";
 

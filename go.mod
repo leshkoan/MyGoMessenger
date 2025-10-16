@@ -1,11 +1,11 @@
-module github.com/leshkoan/MyGoMessenger
+module mygomessenger.com/mygomessenger
 
 go 1.25.2
 
 require (
+	mygomessenger.com/mygomessenger/gen/go/messages v0.0.0
+	mygomessenger.com/mygomessenger/gen/go/users v0.0.0
 	github.com/jmoiron/sqlx v1.4.0
-	github.com/leshkoan/MyGoMessenger/gen/go/messages v0.0.0-00010101000000-000000000000
-	github.com/leshkoan/MyGoMessenger/gen/go/users v0.0.0-00010101000000-000000000000
 	github.com/lib/pq v1.10.9
 	github.com/segmentio/kafka-go v0.4.49
 	google.golang.org/grpc v1.76.0
@@ -21,6 +21,7 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250804133106-a7a43d27e69b // indirect
 )
 
-replace github.com/leshkoan/MyGoMessenger/gen/go/messages => ./gen/go/messages
+replace mygomessenger.com/mygomessenger/gen/go/messages => ./gen/go/messages
 
-replace github.com/leshkoan/MyGoMessenger/gen/go/users => ./gen/go/users
+replace mygomessenger.com/mygomessenger/gen/go/users => ./gen/go/users
+
